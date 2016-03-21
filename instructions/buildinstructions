@@ -1,0 +1,46 @@
+Attached should be what I was planning for the pin connections to the
+pipistrelo (though I wouldn't necessarily bet on the number of blank
+rows between the two sides being right - a fence post error would be
+really easy and I can't check since you have the board ATM). 
+
+For each of the VGA connectors we want:
+Pin  Signal
+1---R
+2---G
+3---B
+4---NC
+5---GND
+6---GND
+7---GND
+8---GND
+9---NC
+10--GND
+11--NC
+12--NC
+13--HSYNC
+14--VSYNC
+15--NC
+
+The wide end is the top row with pins 1-5, then 6-10 in the next row
+down and 11-15 in the bottom (narrow) row. For female connectors looking
+at the solder buckets in each row you count up from left to right (I
+think - I'm pretty sure that's right if the middle row is offset to the
+left rather than the right of the other two). 
+
+I will make you an image for the FPGA that will output a pattern with
+the screen split into quarters and one each of red, green, blue and
+white, then you can test connections with a monitor: if it doesn't give
+anything then it's probably HSYNC, VSYNC or GND and if any of the
+colours are wrong then there's something iffy with that colour (might be
+the signal line or it's matching ground; pins 6, 7 and 8 are the colour
+grounds). 
+
+Have you got a windows or linux machine handy to flash the board? It's
+probably possible from other operating systems but I've never tried it
+and there isn't a handy prebuilt app to do it.
+
+Robert
+--
+Robert McWilliam      rmcw@allmail.net    www.ormiret.com
+
+Cleverly disguised as a responsible adult.
