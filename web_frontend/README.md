@@ -65,3 +65,8 @@ don't particularly care.
 Can I rope anyone in to help with this?
 
 Robert
+
+## Random dev notes
+     
+/var/www/html/videowall.git/trunk/web_frontend
+http://localhost/videowall.git/trunk/web_frontend/
