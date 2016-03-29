@@ -8,6 +8,7 @@
 
     <!-- Bootstrap -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="videowall.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -21,45 +22,31 @@
 require_once("helper.php");
 
 
+$debug = TRUE;
 
 
-$message = "";   
-//if they DID upload a file...
-if($_FILES['image_upload']['name']){
-	//if no errors...
-	if(!$_FILES['image_upload']['error']){
-		//now is the time to modify the future file name and validate the file
-		$new_file_name = strtolower($_FILES['image_upload']['tmp_name']); //rename file
-		if($_FILES['image_upload']['size'] > (1024000))	{
-			$valid_file = false;
-			$message = 'Oops!  Your file\'s size is to large.';
-		} else {
-		    $valid_file = true;
-		}
-		//if the file has passed the test
-		if($valid_file)	{
-		    $image_fn = 'image_data/raw/'.$_FILES['image_upload']['name'];
-		    
-			//move it to where we want it to be
-			move_uploaded_file($_FILES['image_upload']['tmp_name'], $image_fn);
-			#$message = 'Congratulations!  Your file was accepted.';
-			
-            $file = convert_to_size ($image_fn);
-            if ($file) {
-                
-            } else {
-                $message = 'Conversion error';
-            }			
-			
-		}
-	}else{
-		//set that to be the returned message
-		$message = 'Ooops!  Your upload triggered the following error:  '.$_FILES['image_upload']['error'];
-	}
-}
+if ( isset($_POST["task"])) {
+    if ( $_POST["task"] == "upload" )  {
+        handle_upload();
+    }    
+} 
+if ( isset($_GET["task"])) {
+    if ( $_GET["task"] == "delete_one" )  {
+        delete_one();
+    }    
+} 
 
+/*
 
+$videowall_globals = array(
+    "error_message" => "",
+    "error" => FALSE,    
+    "alert_message" => "",
+    "alert_type" => "",
+    "debug" => "",
+);
 
+*/
 
 //you get the following information for each file:
 #echo $_FILES['image_upload']['name'] . "<br/>";
@@ -71,22 +58,54 @@ if($_FILES['image_upload']['name']){
   </head>
   <body>
     <h1>57n Video Wall</h1>
+   
+    
     <?php
-    if ($message) {
+    if ( $videowall_globals['alert_message'] OR $videowall_globals['error_message'] ) {
         ?>
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-<?php echo $videowall_globals['alert_type'] ?>" role="alert">
           <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-          <?php echo $message; ?>
+          <?php echo $videowall_globals['alert_message']; ?>
+          <?php echo $videowall_globals['error_message']; ?>
         </div>
         <?php
     }    
     ?>
+    <hr/>
+    <?php
+    if ( $debug ) {
+        ?>
+        <pre>
+Debug info
+----------
+<?php echo $videowall_globals['debug']; ?>
+----------          
+<?php print_r(error_get_last()); ?>
+        </pre>
+        <?php
+    }    
+    ?>    
+    
     <form class="form-horizontal" action="index.php" method="post" enctype="multipart/form-data">
 	    <input type="file" name="image_upload" size="25" />
+        <input type="hidden" name="task" value="upload" />
 	    <input class="btn btn-default" type="submit" name="submit" value="Upload" />
     </form>
+    
+    <hr/>
+    
+    <div class="thumbs">
+    <?php
+    $images = glob("image_data/resized/*.jpg");
 
-
+    foreach($images as $image) {
+        echo "<div style=\"background-image: url('" . $image . "');\" >";
+        echo "<a href=\"" . $_SERVER['PHP_SELF'] . "?task=delete_one&image=" . basename($image) . "\" class=\"btn btn-default\" type=\"submit\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-trash\"></span> Trash</a>";
+        echo "</div>";
+    }
+    ?>
+    </div>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <script src="bootstrap/js/bootstrap.min.js"></script>

@@ -69,4 +69,9 @@ Robert
 ## Random dev notes
      
 /var/www/html/videowall.git/trunk/web_frontend
+
+
 http://localhost/videowall.git/trunk/web_frontend/
+
+
+http://asus-12/code/videowall.git/trunk/web_frontend/

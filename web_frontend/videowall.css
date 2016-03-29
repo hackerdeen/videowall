@@ -1,0 +1,11 @@
+.thumbs > div {
+    width: 240px;
+    height: 180px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin: 5px;
+    display: inline-block;
+}    
+.thumbs > div > a {
+    margin: 5px;
+}    
