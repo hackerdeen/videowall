@@ -10,6 +10,9 @@
  * @version     1.0.0
 */
 
+# execution time, 300 seconds = 5 minutes
+ini_set('max_execution_time', 300); 
+
 # this is a general array for storing process info
 $videowall_globals = array(
     "error_message" => "",
