@@ -1,5 +1,14 @@
 <?php
-
+/*
+ * This is a helper file for the videowall web interface
+ * 
+ * @author      AndyG - https://twitter.com/andygasman
+ * @package     videowall
+ * @copyright   Copyright 2016
+ * @license     GNU Public License
+ * @link        https://github.com/hackerdeen/videowall
+ * @version     1.0.0
+*/
 
 # this is a general array for storing process info
 $videowall_globals = array(
@@ -10,7 +19,9 @@ $videowall_globals = array(
     "debug" => "",
 );
 
-
+# fixed settings
+define("OUTPUT_WIDTH", 2400);
+define("OUTPUT_HEIGHT", 1800);
 
 
 /*
@@ -20,42 +31,40 @@ function handle_upload() {
 
     global $videowall_globals;
 
-    //if they DID upload a file...
+    # if they DID upload a file...
     if($_FILES['image_upload']['name']){
-        //if no errors...
+        # if no errors...
         if(!$_FILES['image_upload']['error']){
-            //now is the time to modify the future file name and validate the file
-            $new_file_name = strtolower($_FILES['image_upload']['tmp_name']); //rename file
+            # now is the time to modify the future file name and validate the file
+            $new_file_name = strtolower($_FILES['image_upload']['tmp_name']); 
             if($_FILES['image_upload']['size'] > (102400000))	{
-                #$valid_file = false;
-                #$message = 'Oops!  Your file\'s size is to large.';
+                # too big
                 $videowall_globals["error"] = TRUE;
-                $videowall_globals["alert_message"] .= "Oops! Your file is size is to large.";
+                $videowall_globals["alert_message"] .= "Oops! Your file is size is to large.<br/>";
                 $videowall_globals["alert_type"] = "danger";
                 
             } else {
                 $image_fn = 'image_data/raw/'.$_FILES['image_upload']['name'];
                 
-                //move it to where we want it to be
+                # move it to where we want it to be
                 move_uploaded_file($_FILES['image_upload']['tmp_name'], $image_fn);
-                #$message = 'Congratulations!  Your file was accepted.';
                 
                 convert_to_size($image_fn);
                 if (!$videowall_globals["error"]) {
-                    $videowall_globals["alert_message"] .= "Resized ok";
-                    $videowall_globals["alert_type"] = "success";                      
-                    #$return_array["filename"] = $convert_to_size_return_array["filename"]; 
+                    $videowall_globals["alert_message"] .= "Resized ok.<br/>";
+                    $videowall_globals["alert_type"] = "success";   
+
+                    convert_datafile( basename($image_fn) );
                 } else {
                     $videowall_globals["error"] = TRUE;
-                    $videowall_globals["alert_message"] .= "Oops! Your file is size is to large.";
+                    $videowall_globals["alert_message"] .= "Oops! Your file is size is to large.<br/>";
                     $videowall_globals["alert_type"] = "danger";  
                 }			
             }
         } else {
-            //set that to be the returned message
-            #$message = 'Ooops!  Your upload triggered the following error:  '.$_FILES['image_upload']['error'];
+            # upload error
             $videowall_globals["error"] = TRUE;
-            $videowall_globals["alert_message"] .= "Ooops!  Your upload triggered the following error: " . $_FILES['image_upload']['error'];
+            $videowall_globals["alert_message"] .= "Ooops!  Your upload triggered the following error: " . $_FILES['image_upload']['error'] . "<br/>";
             $videowall_globals["alert_type"] = "danger";              
         }
     }
@@ -71,8 +80,8 @@ function convert_to_size ($image_fn) {
     
     global $videowall_globals;
     
-    $output_width   = 2400;
-    $output_height  = 1800;
+    $output_width   = OUTPUT_WIDTH;
+    $output_height  = OUTPUT_HEIGHT;
     $image_fn_file  = basename($image_fn);
 
     $target_output_width   = $output_width;
@@ -148,7 +157,6 @@ function convert_to_size ($image_fn) {
         $videowall_globals["debug"] .= "Width and height are fine, no cropping required.<br/>\n";   
     }    
 
-    
     $videowall_globals["debug"] .= "input_x: " . $input_x . "\n";
     $videowall_globals["debug"] .= "input_y: " . $input_y . "\n";
     $videowall_globals["debug"] .= "output_width: " . $output_width . "\n";
@@ -159,12 +167,54 @@ function convert_to_size ($image_fn) {
     $output_image_filename = "image_data/resized/" . $image_fn_file;
     imagejpeg($output_image_res, $output_image_filename);    
 
-    $videowall_globals["alert_message"] .= "Resized ok";
+    $videowall_globals["alert_message"] .= "Resized ok<br/>";
     $videowall_globals["alert_type"] = "success";       
     
     return;
-
 }
+
+
+
+/*
+create datafile
+*/
+function convert_datafile ($image_fn) {
+    
+    global $videowall_globals;
+
+    $output_width   = OUTPUT_WIDTH;
+    $output_height  = OUTPUT_HEIGHT;    
+    
+    $full_image_fn = "image_data/resized/" . $image_fn;
+    $full_datafile_fn = "image_data/datafile/" . $image_fn;
+    
+    $datafile_string = "";
+    
+    $videowall_globals["debug"] .= "full_image_fn: " . $full_image_fn . "\n";
+    
+    # create an image resourse from the file
+    $image_res = imagecreatefromjpeg($full_image_fn);
+    
+    # for each column
+    for ($pixel_y = 0; $pixel_y < $output_height; $pixel_y++) {
+        # read along the row
+        for ($pixel_x = 0; $pixel_x < $output_width; $pixel_x++) {
+            # Read the pixel colour - http://php.net/manual/en/function.imagecolorat.php
+            $rgb = imagecolorat($image_res, $pixel_y, $pixel_y);
+            #$videowall_globals["debug"] .= "pixel: " . $pixel_x . "x" . $pixel_y . " is " . $rgb . "\n";
+            $full_hex = dechex( $rgb );
+            $redux_hex = substr( $full_hex, 0, 1) . substr( $full_hex, 2, 1) . substr( $full_hex, 4, 1);
+            $datafile_string .= $redux_hex . ",";
+        }
+        $datafile_string .= "\n";
+    }
+    $fh = fopen($full_datafile_fn, 'w') or die();
+    fwrite($fh, $datafile_string);
+    fclose($fh);  
+    
+    return;
+}
+
 
 
 
@@ -180,12 +230,12 @@ function delete_one() {
     
     unlink("image_data/resized/" . $file_to_delete);
     unlink("image_data/raw/" . $file_to_delete);
+    unlink("image_data/datafile/" . $file_to_delete);
     
     $videowall_globals["alert_message"] .= "Deleted " . $file_to_delete;
     $videowall_globals["alert_type"] = "success";     
     
     return;
-
 }
 
 

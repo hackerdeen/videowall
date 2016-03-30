@@ -1,3 +1,15 @@
+<?php
+/*
+ * This is a main file for the videowall web interface
+ * 
+ * @author      AndyG - https://twitter.com/andygasman
+ * @package     videowall
+ * @copyright   Copyright 2016
+ * @license     GNU Public License
+ * @link        https://github.com/hackerdeen/videowall
+ * @version     1.0.0
+*/
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>

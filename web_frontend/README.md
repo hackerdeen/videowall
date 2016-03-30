@@ -12,7 +12,6 @@ This is a web front end and processing engine for the 57n video wall
 - Delete button for each image
 - Delete all button
 
-
 ## Send to wall logic
 - Send newest image
 - Rotate through other images. 30 secs each
@@ -67,11 +66,11 @@ Can I rope anyone in to help with this?
 Robert
 
 ## Random dev notes
-     
+          
 /var/www/html/videowall.git/trunk/web_frontend
 
+\\ASUS-12\code\videowall.git\trunk\web_frontend
 
 http://localhost/videowall.git/trunk/web_frontend/
-
 
 http://asus-12/code/videowall.git/trunk/web_frontend/
