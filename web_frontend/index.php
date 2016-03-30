@@ -85,7 +85,7 @@ error_get_last
 <?php print_r(error_get_last()); ?>
 ----------
 getrusage
-<?php #print_r(getrusage()); ?>
+<?php print_r(getrusage()); ?>
         </pre>
         <?php
     }    
