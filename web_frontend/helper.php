@@ -97,13 +97,13 @@ function convert_to_size ($image_fn) {
     
     $output_ratio = $output_width / $output_height;    
     
-    $videowall_globals["debug"] .= "output_width: " . $output_width . "<br/>\n";
-    $videowall_globals["debug"] .= "output_height: " . $output_height . "<br/>\n";
-    $videowall_globals["debug"] .= "output_ratio: " . $output_ratio . "<br/>\n";
+    $videowall_globals["debug"] .= "output_width: " . $output_width . "\n";
+    $videowall_globals["debug"] .= "output_height: " . $output_height . "\n";
+    $videowall_globals["debug"] .= "output_ratio: " . $output_ratio . "\n";
     
-    $videowall_globals["debug"] .= "input_width: " . $input_width . "<br/>\n";
-    $videowall_globals["debug"] .= "input_height: " . $input_height . "<br/>\n";
-    $videowall_globals["debug"] .= "input_ratio: " . $input_ratio . "<br/>\n";
+    $videowall_globals["debug"] .= "input_width: " . $input_width . "\n";
+    $videowall_globals["debug"] .= "input_height: " . $input_height . "\n";
+    $videowall_globals["debug"] .= "input_ratio: " . $input_ratio . "\n";
     
     
     # create an image resourse from the file
@@ -111,27 +111,27 @@ function convert_to_size ($image_fn) {
     
     if ($input_ratio > 1) {
         # ratio is more than 1, so it's a wide image
-        $videowall_globals["debug"] .= "Wide image<br/>\n";
+        $videowall_globals["debug"] .= "Wide image.\n";
     } else {
         # ratio is less than 1, so it's a tall image
-        $videowall_globals["debug"] .= "Tall image.<br/>\n";
+        $videowall_globals["debug"] .= "Tall image.\n";
     }    
     
     if ($input_ratio > $output_ratio) {
         # ratio is...
-        $videowall_globals["debug"] .= "Input is wider than the output<br/>\n";
+        $videowall_globals["debug"] .= "Input is wider than the output.\n";
 
-        $videowall_globals["debug"] .= "Resize it making the height " . $output_height . "<br/>\n";
+        $videowall_globals["debug"] .= "Resize it making the height " . $output_height . "\n";
         $output_width = $output_height * $input_ratio;
-        $videowall_globals["debug"] .= "output_width: " . $output_width . "<br/>\n";        
+        $videowall_globals["debug"] .= "output_width: " . $output_width . "\n";        
 
     } else {
         # ratio is...
-        $videowall_globals["debug"] .= "Input is taller than the output<br/>\n";
+        $videowall_globals["debug"] .= "Input is taller than the output.\n";
 
-        $videowall_globals["debug"] .= "Resize it making the width " . $output_width . "<br/>\n";
+        $videowall_globals["debug"] .= "Resize it making the width " . $output_width . "\n";
         $output_height = $output_width / $input_ratio;
-        $videowall_globals["debug"] .= "output_height: " . $output_height . "<br/>\n";      
+        $videowall_globals["debug"] .= "output_height: " . $output_height . "\n";      
                 
     }     
 
@@ -144,17 +144,17 @@ function convert_to_size ($image_fn) {
     
     # crop the image down
     if ($output_width > $target_output_width) {
-        $videowall_globals["debug"] .= "To wide.<br/>\n";
+        $videowall_globals["debug"] .= "To wide.\n";
         $width_overflow = $output_width - $target_output_width;
         $to_crop_array['x'] = $width_overflow / 2;
         $output_image_res = imagecrop($output_image_res, $to_crop_array );
     } elseif ($output_height > $target_output_height) {
-        $videowall_globals["debug"] .= "To tall.<br/>\n";    
+        $videowall_globals["debug"] .= "To tall.\n";    
         $height_overflow = $output_height - $target_output_height;
         $to_crop_array['y'] = $height_overflow / 2;        
         $output_image_res = imagecrop($output_image_res, $to_crop_array );
     } else {
-        $videowall_globals["debug"] .= "Width and height are fine, no cropping required.<br/>\n";   
+        $videowall_globals["debug"] .= "Width and height are fine, no cropping required.\n";   
     }    
 
     $videowall_globals["debug"] .= "input_x: " . $input_x . "\n";

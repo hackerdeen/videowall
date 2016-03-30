@@ -30,6 +30,9 @@
     <![endif]-->
     
 <?php 
+
+$time_start = microtime(true); 
+
 # Control
 require_once("helper.php");
 
@@ -48,23 +51,8 @@ if ( isset($_GET["task"])) {
     }    
 } 
 
-/*
-
-$videowall_globals = array(
-    "error_message" => "",
-    "error" => FALSE,    
-    "alert_message" => "",
-    "alert_type" => "",
-    "debug" => "",
-);
-
-*/
-
-//you get the following information for each file:
-#echo $_FILES['image_upload']['name'] . "<br/>";
-#echo $_FILES['image_upload']['size'] . "<br/>";
-#echo $_FILES['image_upload']['type'] . "<br/>";
-#echo $_FILES['image_upload']['tmp_name'] . "<br/>";
+$time_end = microtime(true);
+$videowall_globals['debug'] .= "Time running " . $time_end - $time_start . "\n";
 ?>    
     
   </head>
@@ -93,6 +81,8 @@ Debug info
 <?php echo $videowall_globals['debug']; ?>
 ----------          
 <?php print_r(error_get_last()); ?>
+----------
+<?php print_r(getrusage()); ?>
         </pre>
         <?php
     }    

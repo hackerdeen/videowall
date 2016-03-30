@@ -6,6 +6,14 @@ This is a web front end and processing engine for the 57n video wall
 3x3 screens @ 800x600
 
 
+
+## Directories 
+- /image_data/raw - the uploaded image un modified
+- /image_data/resized - the resized image
+- /image_data/datafile - the data file, a text file or rgb values, comma delineated per x pixel, line delineated per y pixel
+
+
+
 ## UI
 - Upload button
 - Thumbnails of previous uploads
