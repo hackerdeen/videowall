@@ -74,15 +74,12 @@ Can I rope anyone in to help with this?
 
 Robert
 
-## Random dev notes
-          
-/var/www/html/videowall.git/trunk/web_frontend
-
-\\ASUS-12\code\videowall.git\trunk\web_frontend
-
-http://localhost/videowall.git/trunk/web_frontend/
-
-http://asus-12/code/videowall.git/trunk/web_frontend/
+## Random links and paths
+- /var/www/html/videowall.git/trunk/web_frontend
+- \\ASUS-12\code\videowall.git\trunk\web_frontend
+- http://localhost/videowall.git/trunk/web_frontend/
+- http://asus-12/code/videowall.git/trunk/web_frontend/
+- http://eepc/videowall.git/trunk/web_frontend/
 
 ## Refs
 - https://en.wikipedia.org/wiki/Color_depth

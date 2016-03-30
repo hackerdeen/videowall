@@ -198,7 +198,7 @@ function convert_datafile ($image_fn) {
     # create an image resourse from the file
     $image_res = imagecreatefromjpeg($full_image_fn);
     
-    $image_imagick_obj = new Imagick($full_image_fn); 
+    #$image_imagick_obj = new Imagick($full_image_fn); 
     
     # for each column
     for ($pixel_y = 0; $pixel_y < $output_height; $pixel_y++) {
@@ -208,14 +208,15 @@ function convert_datafile ($image_fn) {
             # http://php.net/manual/en/function.imagecolorat.php
             # http://php.net/manual/en/imagick.getimagepixelcolor.php
             
-            #$rgb = imagecolorat($image_res, $pixel_x, $pixel_y);
-            #$full_hex = dechex( $rgb );
-            #$redux_hex = substr( $full_hex, 0, 1) . substr( $full_hex, 2, 1) . substr( $full_hex, 4, 1);
+            
+            $rgb = imagecolorat($image_res, $pixel_x, $pixel_y);
+            $full_hex = dechex( $rgb );
+            $redux_hex = substr( $full_hex, 0, 1) . substr( $full_hex, 2, 1) . substr( $full_hex, 4, 1);
 
             
-            $pixel = $image_imagick_obj->getImagePixelColor($pixel_x, $pixel_y); 
-            $colors = $pixel->getColor();
-            $redux_hex = substr( $colors['r'], 0, 1) . substr( $colors['g'], 0, 1) . substr( $colors['b'], 0, 1);
+            #$pixel = $image_imagick_obj->getImagePixelColor($pixel_x, $pixel_y); 
+            #$colors = $pixel->getColor();
+            #$redux_hex = substr( $colors['r'], 0, 1) . substr( $colors['g'], 0, 1) . substr( $colors['b'], 0, 1);
             
             #$videowall_globals["debug"] .= "pixel: " . $pixel_x . "x" . $pixel_y . " is " . $rgb . "\n";
 
