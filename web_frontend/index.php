@@ -52,7 +52,7 @@ if ( isset($_GET["task"])) {
 } 
 
 $time_end = microtime(true);
-$videowall_globals['debug'] .= "Time running " . $time_end - $time_start . "\n";
+$videowall_globals['debug'] .= "Time running " . ($time_end - $time_start) . "\n";
 ?>    
     
   </head>
@@ -78,11 +78,14 @@ $videowall_globals['debug'] .= "Time running " . $time_end - $time_start . "\n";
         <pre>
 Debug info
 ----------
+debug
 <?php echo $videowall_globals['debug']; ?>
-----------          
+----------    
+error_get_last      
 <?php print_r(error_get_last()); ?>
 ----------
-<?php print_r(getrusage()); ?>
+getrusage
+<?php #print_r(getrusage()); ?>
         </pre>
         <?php
     }    
