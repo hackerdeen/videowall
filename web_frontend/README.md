@@ -14,6 +14,8 @@ This is a web front end and processing engine for the 57n video wall
 
 ## Issues
 - To read the pixel colour, I'm using the imagecolorat (http://php.net/manual/en/function.imagecolorat.php) function, but this gets called 4,320,000 times, and this is quite a slow process, often taking nearly a minute. Oddly it seems faster on my Asus EeePC (Atom CPU N550 @ 1.5GHz) than on my newer Asus X501A (i3-2330M CPU @ 2.2GHz), but this is maybe down to the X501A having a more of a dev/debug config.  It is CPU bound, single threaded.
+-- getImagePixelColor test: Time running 294.09354686737
+-- imagecolorat test: Time running 53.18506193161
 
 ## UI
 - Upload button
@@ -84,3 +86,6 @@ Robert
 ## Refs
 - https://en.wikipedia.org/wiki/Color_depth
 - https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_palettes#3-bit_RGB
+- http://php.net/manual/en/function.imagecolorat.php
+- http://php.net/manual/en/imagick.getimagepixelcolor.php
+- http://php.net/manual/en/function.imagecopyresampled.php
