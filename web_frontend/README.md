@@ -12,7 +12,8 @@ This is a web front end and processing engine for the 57n video wall
 - /image_data/resized - the resized image
 - /image_data/datafile - the data file, a text file or rgb values, comma delineated per x pixel, line delineated per y pixel
 
-
+## Issues
+- To read the pixel colour, I'm using the imagecolorat (http://php.net/manual/en/function.imagecolorat.php) function, but this gets called 4,320,000 times, and this is quite a slow process, often taking nearly a minute. Oddly it seems faster on my Asus EeePC (Atom CPU N550 @ 1.5GHz) than on my newer Asus X501A (i3-2330M CPU @ 2.2GHz), but this is maybe down to the X501A having a more of a dev/debug config.  It is CPU bound, single threaded.
 
 ## UI
 - Upload button
