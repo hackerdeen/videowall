@@ -83,3 +83,7 @@ Robert
 http://localhost/videowall.git/trunk/web_frontend/
 
 http://asus-12/code/videowall.git/trunk/web_frontend/
+
+## Refs
+- https://en.wikipedia.org/wiki/Color_depth
+- https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_palettes#3-bit_RGB
