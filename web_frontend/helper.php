@@ -54,9 +54,7 @@ function handle_upload() {
                 
                 convert_to_size($image_fn);
                 if (!$videowall_globals["error"]) {
-                    $videowall_globals["alert_message"] .= "Resized ok.<br/>";
-                    $videowall_globals["alert_type"] = "success";   
-
+                    # all good, now lets convert it to a datafile
                     convert_datafile( basename($image_fn) );
                 } else {
                     $videowall_globals["error"] = TRUE;
@@ -187,16 +185,22 @@ function convert_datafile ($image_fn) {
 
     $output_width   = OUTPUT_WIDTH;
     $output_height  = OUTPUT_HEIGHT;    
-    
+
+    # create an image resourse from the file        
     $full_image_fn = "image_data/resized/" . $image_fn;
-    $full_datafile_fn = "image_data/datafile/" . $image_fn;
+    $image_res = imagecreatefromjpeg($full_image_fn);    
     
+    # set data file stuff
+    $full_datafile_fn = "image_data/datafile/" . $image_fn;
     $datafile_string = "";
+
+    # create an image resourse for the preview file
+    $full_preview_fn = "image_data/preview/" . $image_fn;    
+    $preview_image_res = imagecreatetruecolor($output_width, $output_height); 
+
     
     $videowall_globals["debug"] .= "full_image_fn: " . $full_image_fn . "\n";
     
-    # create an image resourse from the file
-    $image_res = imagecreatefromjpeg($full_image_fn);
     
     #$image_imagick_obj = new Imagick($full_image_fn); 
     
@@ -220,13 +224,22 @@ function convert_datafile ($image_fn) {
             
             #$videowall_globals["debug"] .= "pixel: " . $pixel_x . "x" . $pixel_y . " is " . $rgb . "\n";
 
+
+            # write the string to the datafile
             $datafile_string .= $redux_hex . ",";
+            
+            imagesetpixel($preview_image_res, $pixel_x, $pixel_y, $rgb);
+            
         }
         $datafile_string .= "\n";
     }
     $fh = fopen($full_datafile_fn, 'w') or die();
     fwrite($fh, $datafile_string);
     fclose($fh);  
+
+
+    # output the preview
+    imagejpeg($preview_image_res, $full_preview_fn); 
     
     return;
 }
@@ -247,6 +260,7 @@ function delete_one() {
     unlink("image_data/resized/" . $file_to_delete);
     unlink("image_data/raw/" . $file_to_delete);
     unlink("image_data/datafile/" . $file_to_delete);
+    unlink("image_data/preview/" . $file_to_delete);    
     
     $videowall_globals["alert_message"] .= "Deleted " . $file_to_delete;
     $videowall_globals["alert_type"] = "success";     
