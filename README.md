@@ -10,5 +10,5 @@ The screens are driven by a Pipistrello FPGA Board.
 
 [Flashing Tool][2]
 
-[1]: https://github.com/hackerdeen/video-wall-front-end
+[1]: https://github.com/hackerdeen/videowall/blob/master/web_frontend/README.md
 [2]: http://pipistrello.saanlima.com/index.php?title=Welcome_to_Pipistrello#Fpgaprog_utility_program_download
