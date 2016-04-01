@@ -64,6 +64,7 @@ $videowall_globals['debug'] .= "Time running " . ($time_end - $time_start) . "\n
         <div class="container">
             <img src="57_North_logo.png" alt="Logo" class="logo" />
             <h1>57n Video Wall</h1>
+            <p>Welcome to the <a href="https://57north.org.uk" title="57north website" target="_blank">57north</a> Video Wall, <a href="https://github.com/hackerdeen/videowall" title="57n Video Wall on github" target="_blank">more info is on Github</a>.</p>
 
             <div id="wait_box" style="display: none">
                 <div class="alert alert-info" role="alert">
@@ -112,6 +113,8 @@ $videowall_globals['debug'] .= "Time running " . ($time_end - $time_start) . "\n
             }    
             ?>    
 
+
+            <h4>Uploaded Your Image</h4>
             <form class="form-horizontal" action="index.php" method="post" enctype="multipart/form-data">
                 <input type="file" name="image_upload" size="25" />
                 <input type="hidden" name="task" value="upload" />
@@ -124,7 +127,7 @@ $videowall_globals['debug'] .= "Time running " . ($time_end - $time_start) . "\n
             <h4>Previosly Uploaded Images</h4>
             <div class="thumbs">
             <?php
-            $images = glob("image_data/resized/*.jpg");
+            $images = glob("image_data/preview/*.jpg");
 
             foreach($images as $image) {
                 echo "<div style=\"background-image: url('" . $image . "');\" >";

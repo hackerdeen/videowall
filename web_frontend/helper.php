@@ -106,7 +106,6 @@ function convert_to_size ($image_fn) {
     $videowall_globals["debug"] .= "input_height: " . $input_height . "\n";
     $videowall_globals["debug"] .= "input_ratio: " . $input_ratio . "\n";
     
-    
     # create an image resourse from the file
     $input_image_res = imagecreatefromjpeg($image_fn);
     
@@ -139,6 +138,7 @@ function convert_to_size ($image_fn) {
     # create an image resourse for the output file
     $output_image_res = imagecreatetruecolor($output_width, $output_height);   
     
+    # resize it
     imagecopyresampled($output_image_res, $input_image_res, 0, 0, 0, 0, $output_width, $output_height, $input_width, $input_height);    
     
     $to_crop_array = array('x'=>0, 'y'=> 0, 'width'=>$target_output_width, 'height'=>$target_output_height);
@@ -168,7 +168,7 @@ function convert_to_size ($image_fn) {
     $output_image_filename = "image_data/resized/" . $image_fn_file;
     imagejpeg($output_image_res, $output_image_filename);    
 
-    $videowall_globals["alert_message"] .= "Resized ok<br/>";
+    $videowall_globals["alert_message"] .= "Resized OK<br/>";
     $videowall_globals["alert_type"] = "success";       
     
     return;
@@ -198,9 +198,7 @@ function convert_datafile ($image_fn) {
     $full_preview_fn = "image_data/preview/" . $image_fn;    
     $preview_image_res = imagecreatetruecolor($output_width, $output_height); 
 
-    
     $videowall_globals["debug"] .= "full_image_fn: " . $full_image_fn . "\n";
-    
     
     #$image_imagick_obj = new Imagick($full_image_fn); 
     
@@ -208,27 +206,25 @@ function convert_datafile ($image_fn) {
     for ($pixel_y = 0; $pixel_y < $output_height; $pixel_y++) {
         # read along the row
         for ($pixel_x = 0; $pixel_x < $output_width; $pixel_x++) {
-            # Read the pixel colour 
-            # http://php.net/manual/en/function.imagecolorat.php
-            # http://php.net/manual/en/imagick.getimagepixelcolor.php
-            
-            
+
+            # Read the pixel colour, http://php.net/manual/en/function.imagecolorat.php            
             $rgb = imagecolorat($image_res, $pixel_x, $pixel_y);
             $full_hex = dechex( $rgb );
             $redux_hex = substr( $full_hex, 0, 1) . substr( $full_hex, 2, 1) . substr( $full_hex, 4, 1);
 
-            
+            # Read the pixel colour, alt option, with imagick http://php.net/manual/en/imagick.getimagepixelcolor.php
             #$pixel = $image_imagick_obj->getImagePixelColor($pixel_x, $pixel_y); 
             #$colors = $pixel->getColor();
             #$redux_hex = substr( $colors['r'], 0, 1) . substr( $colors['g'], 0, 1) . substr( $colors['b'], 0, 1);
             
             #$videowall_globals["debug"] .= "pixel: " . $pixel_x . "x" . $pixel_y . " is " . $rgb . "\n";
 
-
             # write the string to the datafile
             $datafile_string .= $redux_hex . ",";
             
-            imagesetpixel($preview_image_res, $pixel_x, $pixel_y, $rgb);
+            # write the preview data, pad it out to 6 digit hex and convert it to decimal
+            $dec_color = hexdec( substr($redux_hex, 0, 1) . "0" . substr($redux_hex, 1, 1) . "0" . substr($redux_hex, 2, 1) . "0" );
+            imagesetpixel($preview_image_res, $pixel_x, $pixel_y, $dec_color);
             
         }
         $datafile_string .= "\n";
