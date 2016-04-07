@@ -39,8 +39,11 @@ def hexdump(src, length=8):
     return b'\n'.join(result)
 
 
-def client(addr, port):
+def client(addr, port, filename):
     print "                    sending to:", addr, port
+
+    img = Image.open(filename)
+
     csock = socket.socket(socket.AF_INET, 
 			 socket.SOCK_DGRAM)
     csock.connect((addr, port))  # be a well behaved udp peer 
@@ -88,18 +91,18 @@ if __name__ == "__main__":
         print(USAGE)
         sys.exit()
 
-    print(STARTUP_MSG)
-
     mode = sys.argv[1]
 
+    if mode == "client" and len(sys.argv) != 3:
+        print USAGE
+        exit()
+
+    print(STARTUP_MSG)
     print "                                 ", mode
 
     if mode == "server":
         server(dev, SERV_ADDR, SERV_PORT)
     elif mode == "client":
-        if len(sys.argv) != 3:
-            print "usage +filename"
-            exit()
         filename = sys.argv[2]
         client(SERV_ADDR, SERV_PORT, filename)
     elif mode == "pktgen":

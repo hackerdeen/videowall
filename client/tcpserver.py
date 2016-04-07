@@ -6,7 +6,6 @@ import PIL
 from PIL import Image
 import StringIO
 
-import imgload
 import fpgautil
 
 STARTUP_MSG="""
@@ -21,10 +20,10 @@ STARTUP_MSG="""
 
 SERV_ADDR = '127.0.0.1'
 SERV_PORT = 2600
-BUF_SIZE = 1024
+BUF_SIZE = 4096
 
 SHOW = True
-SHOW = False
+#SHOW = False
 DEVNAME = "/dev/ttyUSB0"
 
 SCREENSWIDE = 3
@@ -80,7 +79,7 @@ if __name__ == "__main__":
         img = img.resize(WALLSIZE, PIL.Image.NEAREST) 
 
 
-        fpgaimg = imgload.encodeimg(img)
+        fpgaimg = fpgautil.encodeimg(img)
         if SHOW: fpgaimg.show()
 
         fpgadata = list(img.getdata())
