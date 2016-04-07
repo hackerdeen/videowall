@@ -20,26 +20,10 @@ STARTUP_MSG="""
 
 SERV_ADDR = '127.0.0.1'
 SERV_PORT = 2600
-BUF_SIZE = 4096
+BUFSIZE = 4096
 
-SHOW = True
-#SHOW = False
+SHOW = False
 DEVNAME = "/dev/ttyUSB0"
-
-SCREENSWIDE = 3
-SCREENSTALL = 3
-SCREENSIZE = 800, 600
-WALLSIZE = SCREENSIZE[0]*SCREENSWIDE,SCREENSIZE[1]*SCREENSTALL
-
-def hexdump(src, length=8):
-    result = []
-    digits = 4 if isinstance(src, unicode) else 2
-    for i in xrange(0, len(src), length):
-       s = src[i:i+length]
-       hexa = b' '.join(["%0*X" % (digits, ord(x))  for x in s])
-       text = b''.join([x if 0x20 <= ord(x) < 0x7F else b'.'  for x in s])
-       result.append( b"%04X   %-*s   %s" % (i, length*(digits + 1), hexa, text) )
-    return b'\n'.join(result)
 
 # tcp listener, accepts raw images over a socket
 # you can send an image with nc like so:
@@ -62,7 +46,7 @@ if __name__ == "__main__":
         sys.stdout.flush()
 
         while True:
-            data = conn.recv(BUF_SIZE)
+            data = conn.recv(BUFSIZE)
             if not data: break
             imgdata += data
             sys.stdout.write(".")
@@ -76,7 +60,7 @@ if __name__ == "__main__":
         img = Image.open(imgbuf)
         if SHOW: img.show()
 
-        img = img.resize(WALLSIZE, PIL.Image.NEAREST) 
+        img = img.resize(fpgautil.WALLSIZE, PIL.Image.NEAREST) 
 
 
         fpgaimg = fpgautil.encodeimg(img)
