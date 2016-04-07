@@ -111,6 +111,15 @@ def encodeimg(img):
             fpgaimg.putpixel((x, y), pixel)
     return fpgaimg
 
+#def encodeimg(img, size):
+    #fpgaimg = Image.new("RGBA",size, color=(255,255,255,255))
+
+    #for x in range(size[0]):
+        #for y in range(size[1]):
+            #pixel = packpixel(img,x, y, size[0], size[1])
+            #fpgaimg.putpixel((x, y), pixel)
+    #return fpgaimg
+
 def decodeimg(img):
     newimg = Image.new("RGB", WALLSIZE, color=(0,0,0)) 
 
@@ -134,7 +143,7 @@ if __name__ == "__main__":
     newimg = thresholdimg(srcimg)
     if SHOW: newimg.show()
 
-    fpgaimg = encodeimg(newimg)
+    fpgaimg = encodeimg(newimg, SCREENSIZE)
     if SHOW: fpgaimg.show()
 
     newimg = decodeimg(fpgaimg)
