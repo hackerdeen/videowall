@@ -4,6 +4,7 @@ import PIL
 from PIL import Image
 import struct
 import sys
+from random import shuffle
 
 SCREENSWIDE = 3
 SCREENSTALL = 3
@@ -12,6 +13,7 @@ WALLSIZE = SCREENSIZE[0]*SCREENSWIDE,SCREENSIZE[1]*SCREENSTALL
 
 LIMIT = 64
 SHOW = False
+SHOW = True
 
 def hexdump(src, length=8):
     result = []
@@ -111,15 +113,6 @@ def encodeimg(img):
             fpgaimg.putpixel((x, y), pixel)
     return fpgaimg
 
-#def encodeimg(img, size):
-    #fpgaimg = Image.new("RGBA",size, color=(255,255,255,255))
-
-    #for x in range(size[0]):
-        #for y in range(size[1]):
-            #pixel = packpixel(img,x, y, size[0], size[1])
-            #fpgaimg.putpixel((x, y), pixel)
-    #return fpgaimg
-
 def decodeimg(img):
     newimg = Image.new("RGB", WALLSIZE, color=(0,0,0)) 
 
@@ -131,7 +124,60 @@ def decodeimg(img):
 
 def sendtofpga(devname, data):
 	print devname, "lol"
-	#print hexdump(data) #meh, juggle data into the correct format
+
+def chunkimg(img, size):
+    chunks = []
+    datasz = size-4
+    pixcount = datasz/4
+
+    imgsize = img.size[0] * img.size[1]
+
+    if not(imgsize % size):
+        print "BAD DATA YOU FUCK WIT"
+
+    pixels = list(img.getdata())
+
+    for addr in range(imgsize/pixcount):
+        baddr = addr*pixcount
+        off = baddr+pixcount
+
+        subarr = pixels[baddr:off]
+        data = pixtostr(subarr)
+
+        chunk = struct.pack("I",baddr)
+        chunk += data
+        chunks.append(chunk)
+    return chunks
+
+def chunktoimg(img, chunks):
+    last = 0
+    for chunk in chunks:
+        addr = struct.unpack("I", chunk[0:4]) 
+        addr = addr[0]
+
+        last = addr
+        pixels = strtopix(chunk[4:]) 
+
+        for p in pixels:
+            pos = (addr%SCREENSIZE[0], addr/SCREENSIZE[0])
+            p = ord(p[0]),ord(p[1]),ord(p[2]),ord(p[3])
+
+            img.putpixel(pos , p)
+            addr = addr+1
+
+def pixtostr(pix):
+    s = ""
+    for p in pix:
+        s += chr(p[0])
+        s += chr(p[1])
+        s += chr(p[2])
+        s += chr(p[3])
+    return s
+
+def strtopix(s):
+    n = 4
+    l = list(s)
+    return [l[i:i + n] for i in range(0, len(l), n)]
 
 if __name__ == "__main__":
    
@@ -147,8 +193,19 @@ if __name__ == "__main__":
     newimg = thresholdimg(srcimg)
     if SHOW: newimg.show()
 
-    fpgaimg = encodeimg(newimg, SCREENSIZE)
+    fpgaimg = encodeimg(newimg)
     if SHOW: fpgaimg.show()
+
+    chunks = chunkimg(fpgaimg, 1004)
+    shuffle(chunks)
+    chunkimg = Image.new("RGBA", SCREENSIZE, (0,0,0,255))
+
+    chunktoimg(chunkimg, chunks)
+    chunkimg.show()
+    if SHOW: chunkimg.show()
+    chunkimg = decodeimg(chunkimg)
+    chunkimg.show()
+    if SHOW: chunkimg.show()
 
     newimg = decodeimg(fpgaimg)
     if SHOW: newimg.show()

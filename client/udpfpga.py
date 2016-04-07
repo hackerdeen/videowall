@@ -2,11 +2,11 @@
 
 import socket
 import sys
+from random import shuffle
 
 import PIL
 from PIL import Image
 
-import imgload
 import fpgautil
 
 STARTUP_MSG="""
@@ -25,36 +25,41 @@ MESSAGE = STARTUP_MSG
 
 DEVNAME="/dev/ttyUSB0"
 
-BUF_SIZE = 1024
+BUFSIZE = 1024
+CHUNKSIZE = 1024
 
 USAGE = """udpclient: [server|pktgen] addr port\n            client dest port filename""" 
-def hexdump(src, length=8):
-    result = []
-    digits = 4 if isinstance(src, unicode) else 2
-    for i in xrange(0, len(src), length):
-       s = src[i:i+length]
-       hexa = b' '.join(["%0*X" % (digits, ord(x))  for x in s])
-       text = b''.join([x if 0x20 <= ord(x) < 0x7F else b'.'  for x in s])
-       result.append( b"%04X   %-*s   %s" % (i, length*(digits + 1), hexa, text) )
-    return b'\n'.join(result)
 
+SHOW = True
+SHUFFLE = False
 
 def client(addr, port, filename):
     print "                    sending to:", addr, port
 
+    hsot = addr,port
+
     img = Image.open(filename)
+    img = img.resize( fpgautil.WALLSIZE, PIL.Image.NEAREST)
+
+    img = fpgautil.thresholdimg(img)
+    img = fpgautil.encodeimg(img)
 
     csock = socket.socket(socket.AF_INET, 
 			 socket.SOCK_DGRAM)
-    csock.connect((addr, port))  # be a well behaved udp peer 
+    csock.connect(host)  # be a well behaved udp peer 
 
     #client:
-    #   open image file
-    #   convert image to fpga format
+    #   ~~open image file~~
+    #   ~~convert image to fpga format~~
     #   break fpga into chunks from base address
-    #   randomise chunks (CHAOS!!)
+    #   ~~randomise chunks (CHAOS!!)~~
     #   sendto chunks
-    csock.sendto(MESSAGE, (addr, port))
+
+    chunks = fpgautil.chunkimg(img) #list of str's
+    if SHUFFLE: shuffle(chunks)
+
+    for msg in chunks:
+        csock.sendto(msg, host))
 
 def server(dev, addr, port):
     print "                    listening on", addr, port
@@ -72,7 +77,7 @@ def server(dev, addr, port):
     #   show fb
 
     while True:
-	data, addr = ssock.recvfrom(BUF_SIZE) 
+	data, addr = ssock.recvfrom(BUFSIZE) 
 	print "received message from:", addr
         print hexdump(data)
 
@@ -87,13 +92,14 @@ def pktgen(addr, port):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) <= 2:
+    if len(sys.argv) <= 4:
         print(USAGE)
         sys.exit()
 
     mode = sys.argv[1]
 
-    if mode == "client" and len(sys.argv) != 3:
+    print len(sys.argv)
+    if mode == "client" and len(sys.argv) != 5:
         print USAGE
         exit()
 
@@ -101,9 +107,9 @@ if __name__ == "__main__":
     print "                                 ", mode
 
     if mode == "server":
-        server(dev, SERV_ADDR, SERV_PORT)
+        server(SERV_ADDR, SERV_PORT, dev)
     elif mode == "client":
-        filename = sys.argv[2]
+        filename = sys.argv[4]
         client(SERV_ADDR, SERV_PORT, filename)
     elif mode == "pktgen":
         pktgen(SERV_ADDR, SERV_PORT)
