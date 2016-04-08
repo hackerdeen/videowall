@@ -23,6 +23,7 @@ SERV_PORT = 2600
 BUFSIZE = 4096
 
 SHOW = False
+SHOW = True
 DEVNAME = "/dev/ttyUSB0"
 
 # tcp listener, accepts raw images over a socket

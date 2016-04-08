@@ -22,7 +22,7 @@ STARTUP_MSG="""
 
 SERV_ADDR = "127.0.0.1"
 SERV_PORT = 2600
-DELAY = 10
+DELAY = 1
 
 DEVNAME="/dev/ttyUSB0"
 
@@ -32,7 +32,7 @@ CHUNKSIZE = 1024
 USAGE = """udpclient: pktgen addr port\n           server addr port devname\n           client dest port filename""" 
 
 SHOW = True
-SHUFFLE = False
+#SHUFFLE = False
 
 def client(addr, port, filename):
     print "                    sending to:", addr, port
@@ -47,19 +47,12 @@ def client(addr, port, filename):
 
     csock = socket.socket(socket.AF_INET, 
 			 socket.SOCK_DGRAM)
-    csock.connect(host)  # be a well behaved udp peer 
+    #csock.connect(host)  # be a well behaved udp peer 
 
-    #client:
-    #   ~~open image file~~
-    #   ~~convert image to fpga format~~
-    #   ~~break fpga into chunks from base address~~
-    #   ~~randomise chunks (CHAOS!!)~~
-    #   ~~sendto chunks~~
-    # done?
-
-    chunks = fpgautil.chunkimg(img) #list of str's
+    chunks = fpgautil.chunkimg(img, fpgautil.CHUNKSIZE) #list of str's
     if SHUFFLE: shuffle(chunks)
 
+    print "starting send"
     for msg in chunks:
         csock.sendto(msg, host)
         sys.stdout.write(".")
@@ -80,17 +73,25 @@ def server(addr, port, dev):
     if SHOW: fb.show()
     if SHOW: displayimg.show()
 
-    fgpautil.sendtofpga(dev, fb)
+    fpgautil.sendtofpga(dev, fb)
 
     print "           listening on", host[0], host[1], "controlling", dev
+    count = 0
     while True:
+        # read chunks into buf at $FREQ until EWOULDBLOCK
+        # on EWOULDBLOCK, 
+        #   (maybe using a thread)
+        #   merge chunks
+        #   render decoded buffer
 	data, peer = ssock.recvfrom(BUFSIZE) 
         sys.stdout.write(".")
         sys.stdout.flush()
-	#print "received message from:", peer 
-        #print hexdump(data)
+
         fpgautil.chunktoimg(fb, [data])
-        if SHOW: fb.show()
+        count = count +1
+        if SHOW and count > 480: 
+            fb.show()
+            count = 0
 
 def pktgen(addr, port):
     unktoimg(chunkimg, chunks)
@@ -121,14 +122,20 @@ if __name__ == "__main__":
         print USAGE
         exit()
 
-    print(STARTUP_MSG)
-    print "                                 ", mode
 
     if mode == "server":
+        print(STARTUP_MSG)
+        print "                                 ", mode
         DEVNAME = sys.argv[4]
         server(SERV_ADDR, SERV_PORT, DEVNAME)
     elif mode == "client":
+        print(STARTUP_MSG)
+        print "                                 ", mode
         filename = sys.argv[4]
         client(SERV_ADDR, SERV_PORT, filename)
     elif mode == "pktgen":
+        print(STARTUP_MSG)
+        print "                                 ", mode
         pktgen(SERV_ADDR, SERV_PORT)
+    print USAGE
+    exit()
