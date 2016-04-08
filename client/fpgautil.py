@@ -10,6 +10,7 @@ SCREENSWIDE = 3
 SCREENSTALL = 3
 SCREENSIZE = 800, 600
 WALLSIZE = SCREENSIZE[0]*SCREENSWIDE,SCREENSIZE[1]*SCREENSTALL
+CHUNKSIZE = 1004
 
 LIMIT = 64
 SHOW = False
@@ -116,10 +117,11 @@ def encodeimg(img):
 def decodeimg(img):
     newimg = Image.new("RGB", WALLSIZE, color=(0,0,0)) 
 
+    pixels = []
     for x in range(SCREENSIZE[0]):
         for y in range(SCREENSIZE[1]):
             p = img.getpixel((x,y)) 
-            unpackpixel(newimg,x, y, SCREENSIZE[0], SCREENSIZE[1], p)
+            pixels.append(unpackpixel(newimg,x, y, SCREENSIZE[0], SCREENSIZE[1], p))
     return newimg
 
 def sendtofpga(devname, data):
@@ -195,7 +197,7 @@ if __name__ == "__main__":
     fpgaimg = encodeimg(newimg)
     if SHOW: fpgaimg.show()
 
-    chunks = chunkimg(fpgaimg, 1004)
+    chunks = chunkimg(fpgaimg, CHUNKSIZE)
     shuffle(chunks)
     chunkimg = Image.new("RGBA", SCREENSIZE, (0,0,0,255))
 
