@@ -28,7 +28,7 @@ DEVNAME="/dev/ttyUSB0"
 BUFSIZE = 1024
 CHUNKSIZE = 1024
 
-USAGE = """udpclient: [server|pktgen] addr port\n            client dest port filename""" 
+USAGE = """udpclient: pktgen addr port\n           server addr port devname\n           client dest port filename""" 
 
 SHOW = True
 SHUFFLE = False
@@ -36,7 +36,7 @@ SHUFFLE = False
 def client(addr, port, filename):
     print "                    sending to:", addr, port
 
-    hsot = addr,port
+    host = addr,port
 
     img = Image.open(filename)
     img = img.resize( fpgautil.WALLSIZE, PIL.Image.NEAREST)
@@ -51,37 +51,52 @@ def client(addr, port, filename):
     #client:
     #   ~~open image file~~
     #   ~~convert image to fpga format~~
-    #   break fpga into chunks from base address
+    #   ~~break fpga into chunks from base address~~
     #   ~~randomise chunks (CHAOS!!)~~
-    #   sendto chunks
+    #   ~~sendto chunks~~
+    # done?
 
     chunks = fpgautil.chunkimg(img) #list of str's
     if SHUFFLE: shuffle(chunks)
 
     for msg in chunks:
-        csock.sendto(msg, host))
+        csock.sendto(msg, host)
 
-def server(dev, addr, port):
-    print "                    listening on", addr, port
+def server(addr, port, dev):
+    host = addr,port
+
     ssock = socket.socket(socket.AF_INET, 
 			 socket.SOCK_DGRAM) 
-    ssock.bind((addr, port))
+    ssock.bind(host)
+
+    print "                  setting up fb, encoding, show:", SHOW
+    fb = Image.new("RGBA", fpgautil.SCREENSIZE, (0, 255, 0, 255))
+    displayimg = fpgautil.decodeimg(fb)
+
+    if SHOW: fb.show()
+    if SHOW: displayimg.show()
+
+    fgpautil.sendtofpga(dev, fb)
 
     #server:
-    #   create (flat colour) framebuffer
-    #   send framebuffer to fpga 
-    #   recvfrom packet
-    #   extract addr
-    #   convert base addr to x,y (annoying, try not to)
-    #   work through chunck, updating fb, sending each packet to fpga
-    #   show fb
+    #   ~~create (flat colour) framebuffer~~
+    #   ~~create a buffer to display~~
+    #   ~~send framebuffer to fpga ~~
+    #   ~~recvfrom packet~~
+    #   ~~work through chunck, updating fb, sending each packet to fpga~~
+    #   ~~show fb~~
 
+    print "           listening on", host[0], host[1], "controlling", dev
     while True:
-	data, addr = ssock.recvfrom(BUFSIZE) 
-	print "received message from:", addr
+	data, peer = ssock.recvfrom(BUFSIZE) 
+	print "received message from:", peer 
         print hexdump(data)
+        fpgautil.chunktoimg(fb, [data])
+        if SHOW: fb.show()
 
 def pktgen(addr, port):
+    unktoimg(chunkimg, chunks)
+    if SHOW: chunkimg.show()
     print "                    sending to:", addr, port
     csock = socket.socket(socket.AF_INET, 
 			 socket.SOCK_DGRAM)
@@ -92,13 +107,20 @@ def pktgen(addr, port):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) <= 4:
+    print sys.argv, len(sys.argv)
+    if len(sys.argv) < 4:
         print(USAGE)
         sys.exit()
 
     mode = sys.argv[1]
+    #SERV_ADDR = sys.argv[2]
+    #SERV_PORT = str(sys.argv[3])
+    #DEVNAME
+    #filename
 
-    print len(sys.argv)
+    if mode == "server" and len(sys.argv) != 5:
+        print USAGE
+        exit()
     if mode == "client" and len(sys.argv) != 5:
         print USAGE
         exit()
@@ -107,7 +129,8 @@ if __name__ == "__main__":
     print "                                 ", mode
 
     if mode == "server":
-        server(SERV_ADDR, SERV_PORT, dev)
+        DEVNAME = sys.argv[4]
+        server(SERV_ADDR, SERV_PORT, DEVNAME)
     elif mode == "client":
         filename = sys.argv[4]
         client(SERV_ADDR, SERV_PORT, filename)
