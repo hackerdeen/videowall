@@ -29,7 +29,7 @@ DEVNAME="/dev/ttyUSB0"
 BUFSIZE = 1024
 CHUNKSIZE = 1024
 
-USAGE = """udpclient: pktgen addr port\n           server addr port devname\n           client dest port filename""" 
+USAGE = """udpclient: server addr port devname\n           client dest port filename""" 
 
 SHOW = True
 #SHUFFLE = False
@@ -93,17 +93,6 @@ def server(addr, port, dev):
             fb.show()
             count = 0
 
-def pktgen(addr, port):
-    unktoimg(chunkimg, chunks)
-    if SHOW: chunkimg.show()
-    print "                    sending to:", addr, port
-    csock = socket.socket(socket.AF_INET, 
-			 socket.SOCK_DGRAM)
-    csock.connect((addr, port)) 
-
-    while true:
-        sock.sendto(MESSAGE, (addr, port))
-
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print(USAGE)
@@ -133,9 +122,5 @@ if __name__ == "__main__":
         print "                                 ", mode
         filename = sys.argv[4]
         client(SERV_ADDR, SERV_PORT, filename)
-    elif mode == "pktgen":
-        print(STARTUP_MSG)
-        print "                                 ", mode
-        pktgen(SERV_ADDR, SERV_PORT)
     print USAGE
     exit()
