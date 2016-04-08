@@ -3,6 +3,7 @@
 import socket
 import sys
 from random import shuffle
+import time
 
 import PIL
 from PIL import Image
@@ -21,7 +22,7 @@ STARTUP_MSG="""
 
 SERV_ADDR = "127.0.0.1"
 SERV_PORT = 2600
-MESSAGE = STARTUP_MSG
+DELAY = 10
 
 DEVNAME="/dev/ttyUSB0"
 
@@ -61,6 +62,9 @@ def client(addr, port, filename):
 
     for msg in chunks:
         csock.sendto(msg, host)
+        sys.stdout.write(".")
+        sys.stdout.flush()
+        time.sleep(DELAY)
 
 def server(addr, port, dev):
     host = addr,port
@@ -81,8 +85,10 @@ def server(addr, port, dev):
     print "           listening on", host[0], host[1], "controlling", dev
     while True:
 	data, peer = ssock.recvfrom(BUFSIZE) 
-	print "received message from:", peer 
-        print hexdump(data)
+        sys.stdout.write(".")
+        sys.stdout.flush()
+	#print "received message from:", peer 
+        #print hexdump(data)
         fpgautil.chunktoimg(fb, [data])
         if SHOW: fb.show()
 
@@ -98,8 +104,6 @@ def pktgen(addr, port):
         sock.sendto(MESSAGE, (addr, port))
 
 if __name__ == "__main__":
-
-    print sys.argv, len(sys.argv)
     if len(sys.argv) < 4:
         print(USAGE)
         sys.exit()
