@@ -187,7 +187,6 @@ if __name__ == "__main__":
 
     srcimg = Image.open("morninglake.png")
     srcimg = srcimg.resize(WALLSIZE, PIL.Image.NEAREST) 
-
     if SHOW: srcimg.show()
 
     newimg = thresholdimg(srcimg)
@@ -201,10 +200,9 @@ if __name__ == "__main__":
     chunkimg = Image.new("RGBA", SCREENSIZE, (0,0,0,255))
 
     chunktoimg(chunkimg, chunks)
-    chunkimg.show()
     if SHOW: chunkimg.show()
+
     chunkimg = decodeimg(chunkimg)
-    chunkimg.show()
     if SHOW: chunkimg.show()
 
     newimg = decodeimg(fpgaimg)
