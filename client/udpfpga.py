@@ -78,14 +78,6 @@ def server(addr, port, dev):
 
     fgpautil.sendtofpga(dev, fb)
 
-    #server:
-    #   ~~create (flat colour) framebuffer~~
-    #   ~~create a buffer to display~~
-    #   ~~send framebuffer to fpga ~~
-    #   ~~recvfrom packet~~
-    #   ~~work through chunck, updating fb, sending each packet to fpga~~
-    #   ~~show fb~~
-
     print "           listening on", host[0], host[1], "controlling", dev
     while True:
 	data, peer = ssock.recvfrom(BUFSIZE) 
