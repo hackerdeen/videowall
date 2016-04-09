@@ -67,6 +67,4 @@ if __name__ == "__main__":
         fpgaimg = fpgautil.encodeimg(img)
         if SHOW: fpgaimg.show()
 
-        fpgadata = list(img.getdata())
-        fpgautil.sendtofpga(DEVNAME, fpgadata)
-        print "next image plz..."
+        fpgautil.sendtoimgfpga(DEVNAME, img)

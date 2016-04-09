@@ -6,6 +6,8 @@ import struct
 import sys
 from random import shuffle
 
+import fpgaserial
+
 SCREENSWIDE = 3
 SCREENSTALL = 3
 SCREENSIZE = 800, 600
@@ -124,8 +126,26 @@ def decodeimg(img):
             pixels.append(unpackpixel(newimg,x, y, SCREENSIZE[0], SCREENSIZE[1], p))
     return newimg
 
-def sendtofpga(devname, data):
-	print devname, "lol"
+#lets take in an array of pixels, likke pil.getdata gives
+def sendtoimgfpga(devname, img):
+    addr = 0
+    pixeldata = img.getdata()
+    for p in pixeldata:
+        fpgaserial.write_colour(devname, addr, p)
+        addr = addr+1
+
+def sendtochunkfpga(devname, chunks):
+    print "lol"
+    for chunk in chunks:
+        addr = struct.unpack("I", chunk[0:4]) 
+        addr = addr[0]
+        pixels = strtopix(chunk[4:]) 
+
+        for p in pixels:
+            p = ord(p[0]),ord(p[1]),ord(p[2]),ord(p[3])
+                
+            fpgaserial.write_colour(devname, addr, p)
+            addr = addr+1
 
 def chunkimg(img, size):
     chunks = []
@@ -152,12 +172,10 @@ def chunkimg(img, size):
     return chunks
 
 def chunktoimg(img, chunks):
-    last = 0
     for chunk in chunks:
         addr = struct.unpack("I", chunk[0:4]) 
         addr = addr[0]
 
-        last = addr
         pixels = strtopix(chunk[4:]) 
 
         for p in pixels:
