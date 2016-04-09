@@ -36,15 +36,16 @@ def cycle_colour(ser):
         all_colour(ser, i)
         sleep(4)
 
-def write_colour(ser, x, y, c):
+def write_colourxy(ser, x, y, c):
     addr = x+y*200
     write_colour(ser, addr, c)
 
 #takes a int containing the address and a 4 tuple with colour
 def write_colour(ser, addr, c):
     data = struct.pack(">I>I",addr,c)
-    for c in data:
-        ser.write(c)
+    data = struct.pack("IBBBB", addr, c[0],c[1],c[2],c[3])
+    for b in data:
+        ser.write(b)
     ack = ser.read(1)
     #print "set %x (%d, %d) to %x (%x)"%(addr, x, y, c, colour)
     if ack <> "A":
@@ -59,12 +60,12 @@ def square_colours(x, y):
 def half_colour(ser, colour):
     for x in xrange(100, 200):
         for y in xrange(150):
-            write_colour(ser, x, y, colour)
+            write_colourxy(ser, x, y, colour)
         
 def squares(ser):
     for x in xrange(800):
         for y in xrange(600):
-            write_colour(ser, x, y, square_colours(x, y))
+            write_colourxy(ser, x, y, square_colours(x, y))
             
 if __name__=="__main__":
     ser = serial.Serial('/dev/ttyUSB1', 115200, timeout=1)
