@@ -4,7 +4,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.graphics import Color, Ellipse, Line
 
-import udpfpga
+import ../udpfpga
 import socket
 
 HOST = ("127.0.0.1", 2600)
