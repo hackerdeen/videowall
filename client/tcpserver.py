@@ -2,6 +2,7 @@
 
 import sys
 import socket
+import serial
 import PIL
 from PIL import Image
 import StringIO
@@ -24,7 +25,7 @@ BUFSIZE = 4096
 
 SHOW = False
 SHOW = True
-DEVNAME = "/dev/ttyUSB0"
+DEVNAME = "/dev/ttyUSB1"
 
 # tcp listener, accepts raw images over a socket
 # you can send an image with nc like so:
@@ -40,6 +41,8 @@ if __name__ == "__main__":
     s.listen(1) #only allow one connection to queue at a time
 
     imgdata = ""
+
+    dev = serial.Serial(DEVNAME, 115200, timeout=1)
 
     while True:
         conn, addr = s.accept() 
@@ -67,6 +70,4 @@ if __name__ == "__main__":
         fpgaimg = fpgautil.encodeimg(img)
         if SHOW: fpgaimg.show()
 
-        fpgadata = list(img.getdata())
-        fpgautil.sendtofpga(DEVNAME, fpgadata)
-        print "next image plz..."
+        fpgautil.sendtoimgfpga(dev, img)
